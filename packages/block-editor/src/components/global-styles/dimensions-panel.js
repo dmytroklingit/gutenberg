@@ -38,8 +38,7 @@ export function useHasDimensionsPanel( settings ) {
 	const hasMargin = useHasMargin( settings );
 	const hasGap = useHasGap( settings );
 	const hasMinHeight = useHasMinHeight( settings );
-	const hasWidth = useHasWidth( settings );
-	const hasHeight = useHasHeight( settings );
+	const hasHeight = blockHasHeight( settings );
 	const hasAspectRatio = useHasAspectRatio( settings );
 	const hasChildLayout = useHasChildLayout( settings );
 
@@ -51,7 +50,6 @@ export function useHasDimensionsPanel( settings ) {
 			hasMargin ||
 			hasGap ||
 			hasMinHeight ||
-			hasWidth ||
 			hasHeight ||
 			hasAspectRatio ||
 			hasChildLayout )
@@ -82,10 +80,7 @@ function useHasMinHeight( settings ) {
 	return settings?.dimensions?.minHeight;
 }
 
-function useHasWidth( settings ) {
-	return settings?.dimensions?.width;
-}
-function useHasHeight( settings ) {
+function blockHasHeight( settings ) {
 	return settings?.dimensions?.height;
 }
 
@@ -216,7 +211,7 @@ const DEFAULT_CONTROLS = {
 	margin: true,
 	blockGap: true,
 	minHeight: true,
-	width: false,
+	height: false,
 	aspectRatio: true,
 	childLayout: true,
 };
@@ -395,19 +390,8 @@ export default function DimensionsPanel( {
 	};
 	const hasMinHeightValue = () => !! value?.dimensions?.minHeight;
 
-	// Width
-	const showWidthControl = useHasWidth( settings );
-	const widthValue = decodeValue( inheritedValue?.dimensions?.width );
-	const setWidthValue = ( newValue ) => {
-		onChange( setImmutably( value, [ 'dimensions', 'width' ], newValue ) );
-	};
-	const resetWidthValue = () => {
-		setWidthValue( undefined );
-	};
-	const hasWidthValue = () => !! value?.dimensions?.width;
-
 	// Height
-	const showHeightControl = useHasHeight( settings );
+	const showHeightControl = blockHasHeight( settings );
 	const heightValue = decodeValue( inheritedValue?.dimensions?.height );
 	const setHeightValue = ( newValue ) => {
 		onChange( setImmutably( value, [ 'dimensions', 'height' ], newValue ) );
@@ -719,23 +703,6 @@ export default function DimensionsPanel( {
 						label={ __( 'Minimum height' ) }
 						value={ minHeightValue }
 						onChange={ setMinHeightValue }
-					/>
-				</ToolsPanelItem>
-			) }
-			{ showWidthControl && (
-				<ToolsPanelItem
-					hasValue={ hasWidthValue }
-					label={ __( 'Width' ) }
-					onDeselect={ resetWidthValue }
-					isShownByDefault={
-						defaultControls.width ?? DEFAULT_CONTROLS.width
-					}
-					panelId={ panelId }
-				>
-					<HeightControl
-						label={ __( 'Width' ) }
-						value={ widthValue }
-						onChange={ setWidthValue }
 					/>
 				</ToolsPanelItem>
 			) }

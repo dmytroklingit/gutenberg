@@ -222,14 +222,9 @@ export const __EXPERIMENTAL_STYLE_PROPERTY = {
 		support: [ 'dimensions', 'minHeight' ],
 		useEngine: true,
 	},
-	width: {
-		value: [ 'dimensions', 'width' ],
-		support: [ 'dimensions', 'width' ],
-		useEngine: true,
-	},
 	height: {
-		value: [ 'dimensions', 'width' ],
-		support: [ 'dimensions', 'width' ],
+		value: [ 'dimensions', 'height' ],
+		support: [ 'dimensions', 'height' ],
 		useEngine: true,
 	},
 	padding: {
