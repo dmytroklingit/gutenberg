@@ -1972,7 +1972,7 @@ export function lastBlockInserted( state = {}, action ) {
  */
 export function temporarilyEditingAsBlocks( state = '', action ) {
 	if ( action.type === 'SET_TEMPORARILY_EDITING_AS_BLOCKS' ) {
-		return action.temporarilyEditingAsBlocks;
+		return action.clientId;
 	}
 	return state;
 }
@@ -2306,7 +2306,8 @@ function getDerivedBlockEditingModesForTree( state, treeClientId = '' ) {
 		state.blockListSettings
 	).filter(
 		( clientId ) =>
-			state.blockListSettings[ clientId ]?.templateLock === 'contentOnly'
+			state.blockListSettings[ clientId ]?.templateLock ===
+				'contentOnly' && clientId !== state.temporarilyEditingAsBlocks
 	);
 	// Use array.from for better back compat. Older versions of the iterator returned
 	// from `keys()` didn't have the `filter` method.
@@ -2315,7 +2316,8 @@ function getDerivedBlockEditingModesForTree( state, treeClientId = '' ) {
 			? Array.from( state.blocks.attributes.keys() ).filter(
 					( clientId ) =>
 						state.blocks.attributes.get( clientId )?.metadata
-							?.patternName
+							?.patternName &&
+						clientId !== state.temporarilyEditingAsBlocks
 			  )
 			: [];
 	const contentOnlyParents = [
@@ -2798,6 +2800,46 @@ export function withDerivedBlockEditingModes( reducer ) {
 						derivedBlockEditingModes:
 							nextDerivedBlockEditingModes ??
 							state.derivedBlockEditingModes,
+					};
+				}
+				break;
+			}
+			case 'SET_TEMPORARILY_EDITING_AS_BLOCKS': {
+				const addedBlocks = action.clientId
+					? [ nextState.blocks.byClientId.get( action.clientId ) ]
+					: undefined;
+				const removedClientIds = ! action.clientId
+					? [ state.temporarilyEditingAsBlocks ]
+					: undefined;
+				const nextDerivedBlockEditingModes =
+					getDerivedBlockEditingModesUpdates( {
+						prevState: state,
+						nextState,
+						addedBlocks,
+						removedClientIds,
+						isNavMode: false,
+					} );
+				const nextDerivedNavModeBlockEditingModes =
+					getDerivedBlockEditingModesUpdates( {
+						prevState: state,
+						nextState,
+						addedBlocks,
+						removedClientIds,
+						isNavMode: true,
+					} );
+
+				if (
+					nextDerivedBlockEditingModes ||
+					nextDerivedNavModeBlockEditingModes
+				) {
+					return {
+						...nextState,
+						derivedBlockEditingModes:
+							nextDerivedBlockEditingModes ??
+							state.derivedBlockEditingModes,
+						derivedNavModeBlockEditingModes:
+							nextDerivedNavModeBlockEditingModes ??
+							state.derivedNavModeBlockEditingModes,
 					};
 				}
 				break;
