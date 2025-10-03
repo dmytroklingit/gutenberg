@@ -29,6 +29,7 @@ import position from './position';
 import blockStyleVariation from './block-style-variation';
 import layout from './layout';
 import childLayout from './layout-child';
+import contentLockUI from './content-lock-ui';
 import './metadata';
 import blockHooks from './block-hooks';
 import blockBindingsPanel from './block-bindings';
@@ -46,6 +47,7 @@ createBlockEditFilter(
 		fitText,
 		position,
 		layout,
+		contentLockUI,
 		blockHooks,
 		blockBindingsPanel,
 		childLayout,
