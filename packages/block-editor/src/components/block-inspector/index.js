@@ -313,10 +313,8 @@ const BlockInspectorSingleBlock = ( {
 	hasBlockStyles,
 } ) => {
 	const hasMultipleTabs = availableTabs?.length > 1;
-
 	const blockInformation = useBlockDisplayInformation( clientId );
 	const isBlockSynced = blockInformation.isSynced;
-
 	const shouldShowTabs = ! isBlockSynced && hasMultipleTabs;
 
 	return (
