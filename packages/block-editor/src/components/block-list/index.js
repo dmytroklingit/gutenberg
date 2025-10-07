@@ -129,9 +129,13 @@ function StopEditingAsBlocksOnOutsideSelect( { clientId } ) {
 	const { stopEditingAsBlocks } = unlock( useDispatch( blockEditorStore ) );
 	const isBlockOrDescendantSelected = useSelect(
 		( select ) => {
-			const { isBlockSelected, hasSelectedInnerBlock } =
-				select( blockEditorStore );
+			const {
+				isBlockSelected,
+				hasSelectedInnerBlock,
+				getBlockSelectionStart,
+			} = select( blockEditorStore );
 			return (
+				! getBlockSelectionStart() ||
 				isBlockSelected( clientId ) ||
 				hasSelectedInnerBlock( clientId, true )
 			);
