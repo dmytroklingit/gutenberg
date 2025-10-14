@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { Button } from '@wordpress/components';
+import { Button, __experimentalVStack as VStack } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { store as blockEditorStore } from '../../store';
 import { unlock } from '../../lock-unlock';
 
-export default function EditContentsButton( { clientId } ) {
+export default function EditContents( { clientId } ) {
 	// Disable reason: it is an effect so can't move relocated to after
 	// the if statement.
 	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -21,19 +21,22 @@ export default function EditContentsButton( { clientId } ) {
 	const {
 		attributes,
 		isContentOnlyTemplateLocked,
-		isTemporarilyEditedBlock,
+		isWithinEditedSection,
+		temporarilyEditingBlocks,
 	} = useSelect(
 		( select ) => {
 			const {
 				getBlockAttributes,
 				getTemporarilyEditingAsBlocks,
 				getTemplateLock,
+				isWithinTemporarilyEditedSection,
 			} = unlock( select( blockEditorStore ) );
 
 			return {
 				attributes: getBlockAttributes( clientId ),
-				isTemporarilyEditedBlock:
-					getTemporarilyEditingAsBlocks() === clientId,
+				isWithinEditedSection:
+					isWithinTemporarilyEditedSection( clientId ),
+				temporarilyEditingBlocks: getTemporarilyEditingAsBlocks(),
 				isContentOnlyTemplateLocked:
 					getTemplateLock( clientId ) === 'contentOnly',
 			};
@@ -44,27 +47,29 @@ export default function EditContentsButton( { clientId } ) {
 	if (
 		! attributes?.metadata?.patternName &&
 		! isContentOnlyTemplateLocked &&
-		! isTemporarilyEditedBlock
+		! isWithinEditedSection
 	) {
 		return null;
 	}
 
 	return (
-		<Button
-			className="block-editor-block-inspector-edit-contents-button"
-			__next40pxDefaultSize
-			variant="secondary"
-			onClick={ () => {
-				if ( ! isTemporarilyEditedBlock ) {
-					modifyContentLockBlock( clientId );
-				} else {
-					stopEditingAsBlocks();
-				}
-			} }
-		>
-			{ isTemporarilyEditedBlock
-				? __( 'Finish editing' )
-				: __( 'Edit design' ) }
-		</Button>
+		<VStack className="block-editor-block-inspector-edit-contents" expanded>
+			<Button
+				className="block-editor-block-inspector-edit-contents__button"
+				__next40pxDefaultSize
+				variant="secondary"
+				onClick={ () => {
+					if ( ! temporarilyEditingBlocks ) {
+						modifyContentLockBlock( clientId );
+					} else {
+						stopEditingAsBlocks();
+					}
+				} }
+			>
+				{ temporarilyEditingBlocks
+					? __( 'Finish editing' )
+					: __( 'Edit design' ) }
+			</Button>
+		</VStack>
 	);
 }

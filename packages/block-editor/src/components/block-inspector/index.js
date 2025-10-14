@@ -13,7 +13,7 @@ import { useSelect } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import EditContentsButton from './edit-contents-button';
+import EditContents from './edit-contents';
 import SkipToSelectedBlock from '../skip-to-selected-block';
 import BlockCard from '../block-card';
 import MultiSelectionInspector from '../multi-selection-inspector';
@@ -93,6 +93,7 @@ function BlockInspector() {
 		isSectionBlock,
 		isSectionBlockInSelection,
 		hasBlockStyles,
+		temporarilyEditedClientId,
 	} = useSelect( ( select ) => {
 		const {
 			getSelectedBlockClientId,
@@ -101,6 +102,7 @@ function BlockInspector() {
 			getBlockName,
 			getParentSectionBlock,
 			isSectionBlock: _isSectionBlock,
+			getTemporarilyEditingAsBlocks,
 		} = unlock( select( blockEditorStore ) );
 		const { getBlockStyles } = select( blocksStore );
 		const _selectedBlockClientId = getSelectedBlockClientId();
@@ -115,7 +117,6 @@ function BlockInspector() {
 		const _isSectionBlockInSelection = selectedBlockClientIds.some(
 			( id ) => _isSectionBlock( id )
 		);
-
 		const blockStyles =
 			_selectedBlockName && getBlockStyles( _selectedBlockName );
 		const _hasBlockStyles = blockStyles && blockStyles.length > 0;
@@ -128,6 +129,7 @@ function BlockInspector() {
 			isSectionBlockInSelection: _isSectionBlockInSelection,
 			isSectionBlock: _isSectionBlock( renderedBlockClientId ),
 			hasBlockStyles: _hasBlockStyles,
+			temporarilyEditedClientId: getTemporarilyEditingAsBlocks(),
 		};
 	}, [] );
 
@@ -263,6 +265,7 @@ function BlockInspector() {
 				availableTabs={ availableTabs }
 				contentClientIds={ contentClientIds }
 				hasBlockStyles={ hasBlockStyles }
+				temporarilyEditedClientId={ temporarilyEditedClientId }
 			/>
 		</BlockInspectorSingleBlockWrapper>
 	);
@@ -311,23 +314,37 @@ const BlockInspectorSingleBlock = ( {
 	availableTabs,
 	contentClientIds,
 	hasBlockStyles,
+	temporarilyEditedClientId,
 } ) => {
 	const hasMultipleTabs = availableTabs?.length > 1;
+	const hasParentChildBlockCards =
+		temporarilyEditedClientId && temporarilyEditedClientId !== clientId;
+	const parentBlockInformation = useBlockDisplayInformation(
+		temporarilyEditedClientId
+	);
 	const blockInformation = useBlockDisplayInformation( clientId );
 	const isBlockSynced = blockInformation.isSynced;
 	const shouldShowTabs = ! isBlockSynced && hasMultipleTabs;
 
 	return (
 		<div className="block-editor-block-inspector">
+			{ window?.__experimentalContentOnlyPatternInsertion &&
+				hasParentChildBlockCards && (
+					<BlockCard
+						{ ...parentBlockInformation }
+						allowParentNavigation
+						isParent={ hasParentChildBlockCards }
+					/>
+				) }
 			<BlockCard
 				{ ...blockInformation }
 				className={ isBlockSynced && 'is-synced' }
 				allowParentNavigation
-			>
-				{ window?.__experimentalContentOnlyPatternInsertion && (
-					<EditContentsButton clientId={ clientId } />
-				) }
-			</BlockCard>
+				isChild={ hasParentChildBlockCards }
+			/>
+			{ window?.__experimentalContentOnlyPatternInsertion && (
+				<EditContents clientId={ clientId } />
+			) }
 			<BlockVariationTransforms blockClientId={ clientId } />
 			{ shouldShowTabs && (
 				<InspectorControlsTabs

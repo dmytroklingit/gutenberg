@@ -8,6 +8,7 @@ import clsx from 'clsx';
  */
 import {
 	Button,
+	Icon,
 	__experimentalText as Text,
 	__experimentalVStack as VStack,
 	privateApis as componentsPrivateApis,
@@ -15,7 +16,12 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import deprecated from '@wordpress/deprecated';
 import { __, isRTL } from '@wordpress/i18n';
-import { chevronLeft, chevronRight } from '@wordpress/icons';
+import {
+	chevronLeft,
+	chevronRight,
+	arrowRight,
+	arrowLeft,
+} from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -54,6 +60,8 @@ const { Badge } = unlock( componentsPrivateApis );
  * @param {string}        [props.className]             Additional classes to apply to the card.
  * @param {string}        [props.name]                  Custom block name to display before the title.
  * @param {string}        [props.allowParentNavigation] Show a back arrow to the parent block in some situations.
+ * @param {string}        [props.isParent]              Whether the block card is for a parent block.
+ * @param {string}        [props.isChild]               Whether the block card is for a child block.
  * @param {Element}       [props.children]              Children.
  * @return {Element}                        Block card component.
  */
@@ -65,6 +73,8 @@ function BlockCard( {
 	className,
 	name,
 	allowParentNavigation,
+	isParent,
+	isChild,
 	children,
 } ) {
 	if ( blockType ) {
@@ -75,25 +85,15 @@ function BlockCard( {
 		( { title, icon, description } = blockType );
 	}
 
-	const { parentNavBlockClientId, parentSectionClientId } = useSelect(
+	const { parentNavBlockClientId } = useSelect(
 		( select ) => {
-			if ( ! allowParentNavigation ) {
+			if ( ! isParent && ! isChild && ! allowParentNavigation ) {
 				return;
 			}
-			const {
-				getSelectedBlockClientId,
-				getBlockParentsByBlockName,
-				getTemporarilyEditingAsBlocks,
-				isWithinTemporarilyEditedSection,
-			} = unlock( select( blockEditorStore ) );
+			const { getSelectedBlockClientId, getBlockParentsByBlockName } =
+				select( blockEditorStore );
 
 			const _selectedBlockClientId = getSelectedBlockClientId();
-			const temporarilyEditedSection = getTemporarilyEditingAsBlocks();
-			const isChildOfTemporarilyEditedSection =
-				temporarilyEditedSection &&
-				temporarilyEditedSection !== _selectedBlockClientId
-					? isWithinTemporarilyEditedSection( _selectedBlockClientId )
-					: undefined;
 
 			return {
 				parentNavBlockClientId: getBlockParentsByBlockName(
@@ -101,50 +101,58 @@ function BlockCard( {
 					'core/navigation',
 					true
 				)[ 0 ],
-				parentSectionClientId: isChildOfTemporarilyEditedSection
-					? temporarilyEditedSection
-					: undefined,
 			};
 		},
-		[ allowParentNavigation ]
+		[ allowParentNavigation, isChild, isParent ]
 	);
 
 	const { selectBlock } = useDispatch( blockEditorStore );
 
 	return (
-		<div className={ clsx( 'block-editor-block-card', className ) }>
-			{ allowParentNavigation &&
-				( parentNavBlockClientId || parentSectionClientId ) && ( // This is only used by the Navigation block for now. It's not ideal having Navigation block specific code here.
-					<Button
-						onClick={ () =>
-							selectBlock(
-								parentNavBlockClientId || parentSectionClientId
-							)
-						}
-						label={
-							parentNavBlockClientId
-								? __( 'Go to parent Navigation block' )
-								: // TODO - improve copy, not sure that we should use the term 'section'
-								  __( 'Go to parent section' )
-						}
-						style={
-							// TODO: This style override is also used in ToolsPanelHeader.
-							// It should be supported out-of-the-box by Button.
-							{ minWidth: 24, padding: 0 }
-						}
-						icon={ isRTL() ? chevronRight : chevronLeft }
-						size="small"
-					/>
-				) }
+		<div
+			className={ clsx(
+				'block-editor-block-card',
+				{
+					'is-parent': isParent,
+					'is-child': isChild,
+				},
+				className
+			) }
+		>
+			{ parentNavBlockClientId && ( // This is only used by the Navigation block for now. It's not ideal having Navigation block specific code here.
+				<Button
+					onClick={ () => selectBlock( parentNavBlockClientId ) }
+					label={
+						parentNavBlockClientId
+							? __( 'Go to parent Navigation block' )
+							: // TODO - improve copy, not sure that we should use the term 'section'
+							  __( 'Go to parent section' )
+					}
+					style={
+						// TODO: This style override is also used in ToolsPanelHeader.
+						// It should be supported out-of-the-box by Button.
+						{ minWidth: 24, padding: 0 }
+					}
+					icon={ isRTL() ? chevronRight : chevronLeft }
+					size="small"
+				/>
+			) }
+			{ isChild && (
+				<span className="block-editor-block-card__child-indicator-icon">
+					<Icon icon={ isRTL() ? arrowLeft : arrowRight } />
+				</span>
+			) }
 			<BlockIcon icon={ icon } showColors />
 			<VStack spacing={ 1 }>
 				<h2 className="block-editor-block-card__title">
 					<span className="block-editor-block-card__name">
 						{ !! name?.length ? name : title }
 					</span>
-					{ !! name?.length && <Badge>{ title }</Badge> }
+					{ ! isParent && ! isChild && !! name?.length && (
+						<Badge>{ title }</Badge>
+					) }
 				</h2>
-				{ description && (
+				{ ! isParent && ! isChild && description && (
 					<Text className="block-editor-block-card__description">
 						{ description }
 					</Text>
