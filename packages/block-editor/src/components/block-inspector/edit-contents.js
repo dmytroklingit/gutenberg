@@ -12,9 +12,6 @@ import { store as blockEditorStore } from '../../store';
 import { unlock } from '../../lock-unlock';
 
 export default function EditContents( { clientId } ) {
-	// Disable reason: it is an effect so can't move relocated to after
-	// the if statement.
-	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 	const { modifyContentLockBlock, stopEditingAsBlocks } = unlock(
 		useDispatch( blockEditorStore )
 	);
