@@ -1641,8 +1641,6 @@ const LayoutDetailsComponent = () => {
 
 	const form: Form = {
 		fields: [
-			'title',
-			'status',
 			{
 				id: 'discussion',
 				label: 'Discussion',
