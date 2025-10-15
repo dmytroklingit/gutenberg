@@ -85,7 +85,7 @@ function BlockCard( {
 		( { title, icon, description } = blockType );
 	}
 
-	const { parentNavBlockClientId } = useSelect(
+	const parentNavBlockClientId = useSelect(
 		( select ) => {
 			if ( ! isParent && ! isChild && ! allowParentNavigation ) {
 				return;
@@ -95,13 +95,11 @@ function BlockCard( {
 
 			const _selectedBlockClientId = getSelectedBlockClientId();
 
-			return {
-				parentNavBlockClientId: getBlockParentsByBlockName(
-					_selectedBlockClientId,
-					'core/navigation',
-					true
-				)[ 0 ],
-			};
+			return getBlockParentsByBlockName(
+				_selectedBlockClientId,
+				'core/navigation',
+				true
+			)[ 0 ];
 		},
 		[ allowParentNavigation, isChild, isParent ]
 	);
