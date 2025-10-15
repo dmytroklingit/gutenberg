@@ -6,7 +6,7 @@ import type { Field } from './field-api';
 /**
  * DataForm layouts.
  */
-export type LayoutType = 'regular' | 'panel' | 'card' | 'row';
+export type LayoutType = 'regular' | 'panel' | 'card' | 'row' | 'details';
 export type LabelPosition = 'top' | 'side' | 'none';
 
 export type PanelSummaryField = string | string[];
@@ -91,12 +91,27 @@ export type NormalizedRowLayout = {
 	styles: Record< string, { flex?: React.CSSProperties[ 'flex' ] } >;
 };
 
-export type Layout = RegularLayout | PanelLayout | CardLayout | RowLayout;
+export type DetailsLayout = {
+	type: 'details';
+	summary?: string;
+};
+export type NormalizedDetailsLayout = {
+	type: 'details';
+	summary: string;
+};
+
+export type Layout =
+	| RegularLayout
+	| PanelLayout
+	| CardLayout
+	| RowLayout
+	| DetailsLayout;
 export type NormalizedLayout =
 	| NormalizedRegularLayout
 	| NormalizedPanelLayout
 	| NormalizedCardLayout
-	| NormalizedRowLayout;
+	| NormalizedRowLayout
+	| NormalizedDetailsLayout;
 
 export type NormalizedSummaryField =
 	| NormalizedPanelSummaryField
