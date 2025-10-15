@@ -32,6 +32,22 @@ import BlockIcon from '../block-icon';
 
 const { Badge } = unlock( componentsPrivateApis );
 
+function OptionalParentSelectButton( { children, onClick } ) {
+	if ( ! onClick ) {
+		return children;
+	}
+
+	return (
+		<Button
+			__next40pxDefaultSize
+			className="block-editor-block-card__parent-select-button"
+			onClick={ onClick }
+		>
+			{ children }
+		</Button>
+	);
+}
+
 /**
  * A card component that displays block information including title, icon, and description.
  * Can be used to show block metadata and navigation controls for parent blocks.
@@ -60,8 +76,8 @@ const { Badge } = unlock( componentsPrivateApis );
  * @param {string}        [props.className]             Additional classes to apply to the card.
  * @param {string}        [props.name]                  Custom block name to display before the title.
  * @param {string}        [props.allowParentNavigation] Show a back arrow to the parent block in some situations.
- * @param {string}        [props.isParent]              Whether the block card is for a parent block.
- * @param {string}        [props.isChild]               Whether the block card is for a child block.
+ * @param {string}        [props.parentClientId]        The parent clientId, if this card is for a parent block.
+ * @param {string}        [props.isChild]               Whether the block card is for a child block, in which case, indent the block using an arrow.
  * @param {Element}       [props.children]              Children.
  * @return {Element}                        Block card component.
  */
@@ -73,7 +89,7 @@ function BlockCard( {
 	className,
 	name,
 	allowParentNavigation,
-	isParent,
+	parentClientId,
 	isChild,
 	children,
 } ) {
@@ -87,7 +103,7 @@ function BlockCard( {
 
 	const parentNavBlockClientId = useSelect(
 		( select ) => {
-			if ( ! isParent && ! isChild && ! allowParentNavigation ) {
+			if ( ! parentClientId && ! isChild && ! allowParentNavigation ) {
 				return;
 			}
 			const { getSelectedBlockClientId, getBlockParentsByBlockName } =
@@ -101,17 +117,19 @@ function BlockCard( {
 				true
 			)[ 0 ];
 		},
-		[ allowParentNavigation, isChild, isParent ]
+		[ allowParentNavigation, isChild, parentClientId ]
 	);
 
 	const { selectBlock } = useDispatch( blockEditorStore );
+
+	const TitleElement = parentClientId ? 'div' : 'h2';
 
 	return (
 		<div
 			className={ clsx(
 				'block-editor-block-card',
 				{
-					'is-parent': isParent,
+					'is-parent': parentClientId,
 					'is-child': isChild,
 				},
 				className
@@ -140,23 +158,33 @@ function BlockCard( {
 					<Icon icon={ isRTL() ? arrowLeft : arrowRight } />
 				</span>
 			) }
-			<BlockIcon icon={ icon } showColors />
-			<VStack spacing={ 1 }>
-				<h2 className="block-editor-block-card__title">
-					<span className="block-editor-block-card__name">
-						{ !! name?.length ? name : title }
-					</span>
-					{ ! isParent && ! isChild && !! name?.length && (
-						<Badge>{ title }</Badge>
+			<OptionalParentSelectButton
+				onClick={
+					parentClientId
+						? () => {
+								selectBlock( parentClientId );
+						  }
+						: undefined
+				}
+			>
+				<BlockIcon icon={ icon } showColors />
+				<VStack spacing={ 1 }>
+					<TitleElement className="block-editor-block-card__title">
+						<span className="block-editor-block-card__name">
+							{ !! name?.length ? name : title }
+						</span>
+						{ ! parentClientId && ! isChild && !! name?.length && (
+							<Badge>{ title }</Badge>
+						) }
+					</TitleElement>
+					{ ! parentClientId && ! isChild && description && (
+						<Text className="block-editor-block-card__description">
+							{ description }
+						</Text>
 					) }
-				</h2>
-				{ ! isParent && ! isChild && description && (
-					<Text className="block-editor-block-card__description">
-						{ description }
-					</Text>
-				) }
-				{ children }
-			</VStack>
+					{ children }
+				</VStack>
+			</OptionalParentSelectButton>
 		</div>
 	);
 }

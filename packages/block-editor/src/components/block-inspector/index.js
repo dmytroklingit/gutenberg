@@ -333,7 +333,7 @@ const BlockInspectorSingleBlock = ( {
 					<BlockCard
 						{ ...parentBlockInformation }
 						allowParentNavigation
-						isParent={ hasParentChildBlockCards }
+						parentClientId={ temporarilyEditedClientId }
 					/>
 				) }
 			<BlockCard
