@@ -6,12 +6,6 @@ import deprecated from '@wordpress/deprecated';
 import { speak } from '@wordpress/a11y';
 import { __ } from '@wordpress/i18n';
 
-/**
- * Internal dependencies
- */
-import { store as blockEditorStore } from './index';
-import { unlock } from '../lock-unlock';
-
 const castArray = ( maybeArray ) =>
 	Array.isArray( maybeArray ) ? maybeArray : [ maybeArray ];
 
@@ -379,26 +373,15 @@ export function setInsertionPoint( value ) {
  */
 export const modifyContentLockBlock =
 	( clientId ) =>
-	( { select, dispatch } ) => {
-		dispatch.selectBlock( clientId );
-		const focusModeToRevert = select.getSettings().focusMode;
-		dispatch.updateSettings( { focusMode: true } );
-		dispatch.__unstableSetTemporarilyEditingAsBlocks(
-			clientId,
-			focusModeToRevert
-		);
+	( { dispatch } ) => {
+		dispatch.__unstableSetTemporarilyEditingAsBlocks( clientId );
 	};
 
 /**
  * Action that stops temporarily editing as blocks.
  */
 export function stopEditingAsBlocks() {
-	return ( { dispatch, registry } ) => {
-		const focusModeToRevert = unlock(
-			registry.select( blockEditorStore )
-		).getTemporarilyEditingFocusModeToRevert();
-
-		dispatch.updateSettings( { focusMode: focusModeToRevert } );
+	return ( { dispatch } ) => {
 		dispatch.__unstableSetTemporarilyEditingAsBlocks();
 	};
 }

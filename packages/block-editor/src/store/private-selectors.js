@@ -580,18 +580,6 @@ export function isWithinTemporarilyEditedSection( state, clientId ) {
 }
 
 /**
- * Returns the focus mode that should be reapplied when the user stops editing
- * a content locked blocks as a block without locking.
- *
- * @param {Object} state Global application state.
- *
- * @return {?string} The focus mode that should be re-set when temporarily editing as blocks stops.
- */
-export function getTemporarilyEditingFocusModeToRevert( state ) {
-	return state.temporarilyEditingFocusModeRevert;
-}
-
-/**
  * Returns the style attributes of multiple blocks.
  *
  * @param {Object}   state     Global application state.
@@ -740,5 +728,5 @@ export const isBlockHidden = ( state, clientId ) => {
  * @return {boolean} Whether the block is currently spotlighted.
  */
 export function hasBlockSpotlight( state ) {
-	return !! state.hasBlockSpotlight;
+	return !! state.hasBlockSpotlight || !! state.temporarilyEditingAsBlocks;
 }
