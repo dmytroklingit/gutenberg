@@ -64,8 +64,8 @@ export default function EditContents( { clientId } ) {
 				} }
 			>
 				{ temporarilyEditingBlocks
-					? __( 'Finish editing' )
-					: __( 'Edit design' ) }
+					? __( 'Lock design' )
+					: __( 'Unlock design' ) }
 			</Button>
 		</VStack>
 	);
