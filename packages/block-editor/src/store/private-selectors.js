@@ -509,7 +509,7 @@ export const getContentLockingParent = ( state, clientId ) => {
 export const getParentSectionBlock = ( state, clientId ) => {
 	let current = clientId;
 	let result;
-	while ( ! result && ( current = state.blocks.parents.get( current ) ) ) {
+	while ( ( current = state.blocks.parents.get( current ) ) ) {
 		if ( isSectionBlock( state, current ) ) {
 			result = current;
 		}

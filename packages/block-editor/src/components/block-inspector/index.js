@@ -103,12 +103,17 @@ function BlockInspector() {
 			getParentSectionBlock,
 			isSectionBlock: _isSectionBlock,
 			getEditedContentOnlySection,
+			isWithinEditedContentOnlySection,
 		} = unlock( select( blockEditorStore ) );
 		const { getBlockStyles } = select( blocksStore );
 		const _selectedBlockClientId = getSelectedBlockClientId();
-		const renderedBlockClientId =
-			getParentSectionBlock( _selectedBlockClientId ) ||
-			_selectedBlockClientId;
+		const isWithinEditedSection = isWithinEditedContentOnlySection(
+			_selectedBlockClientId
+		);
+		const renderedBlockClientId = isWithinEditedSection
+			? _selectedBlockClientId
+			: getParentSectionBlock( _selectedBlockClientId ) ||
+			  _selectedBlockClientId;
 		const _selectedBlockName =
 			renderedBlockClientId && getBlockName( renderedBlockClientId );
 		const _blockType =
