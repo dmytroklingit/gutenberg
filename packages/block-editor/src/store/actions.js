@@ -1913,7 +1913,7 @@ export function setBlockVisibility( updates ) {
  */
 export function __unstableSetTemporarilyEditingAsBlocks( clientId ) {
 	return {
-		type: 'SET_TEMPORARILY_EDITING_AS_BLOCKS',
+		type: 'EDIT_CONTENT_ONLY_SECTION',
 		clientId,
 	};
 }

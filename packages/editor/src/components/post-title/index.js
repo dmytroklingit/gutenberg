@@ -31,16 +31,16 @@ import PostTypeSupportCheck from '../post-type-support-check';
 import { unlock } from '../../lock-unlock';
 
 const PostTitle = forwardRef( ( _, forwardedRef ) => {
-	const { placeholder, isTemporarilyEditingBlocks } = useSelect(
+	const { placeholder, isEditingContentOnlySection } = useSelect(
 		( select ) => {
-			const { getSettings, getTemporarilyEditingAsBlocks } = unlock(
+			const { getSettings, getEditedContentOnlySection } = unlock(
 				select( blockEditorStore )
 			);
 			const { titlePlaceholder } = getSettings();
 
 			return {
 				placeholder: titlePlaceholder,
-				isTemporarilyEditingBlocks: !! getTemporarilyEditingAsBlocks(),
+				isEditingContentOnlySection: !! getEditedContentOnlySection(),
 			};
 		},
 		[]
@@ -179,13 +179,13 @@ const PostTitle = forwardRef( ( _, forwardedRef ) => {
 
 	// Because the title is within the editor iframe, we can't use scss styles.
 	// Instead use an inline style to dim the block when it's disabled.
-	const style = isTemporarilyEditingBlocks ? { opacity: 0.2 } : undefined;
+	const style = isEditingContentOnlySection ? { opacity: 0.2 } : undefined;
 
 	return (
 		/* eslint-disable jsx-a11y/heading-has-content, jsx-a11y/no-noninteractive-element-to-interactive-role */
 		<h1
 			ref={ useMergeRefs( [ richTextRef, focusRef ] ) }
-			contentEditable={ ! isTemporarilyEditingBlocks }
+			contentEditable={ ! isEditingContentOnlySection }
 			className={ className }
 			aria-label={ decodedPlaceholder }
 			role="textbox"

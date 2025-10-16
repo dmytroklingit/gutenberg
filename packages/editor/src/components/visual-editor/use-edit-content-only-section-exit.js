@@ -11,19 +11,22 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 import { unlock } from '../../lock-unlock';
 
 /**
- * Allows Zoom Out mode to be exited by double clicking in the selected block.
+ * Allows content only section editing to be exited by clicking outside of the
+ * edited blocks.
  */
-export function useTemporarilyEditedBlocksExit() {
-	const { getTemporarilyEditingAsBlocks } = unlock(
+export function useEditContentOnlySectionExit() {
+	const { getEditedContentOnlySection } = unlock(
 		useSelect( blockEditorStore )
 	);
-	const { stopEditingAsBlocks } = unlock( useDispatch( blockEditorStore ) );
+	const { stopEditingContentOnlySection } = unlock(
+		useDispatch( blockEditorStore )
+	);
 
 	return useRefEffect(
 		( node ) => {
 			function onClick( event ) {
-				const tempEditedClientId = getTemporarilyEditingAsBlocks();
-				if ( ! tempEditedClientId ) {
+				const editedContentOnlySection = getEditedContentOnlySection();
+				if ( ! editedContentOnlySection ) {
 					return;
 				}
 
@@ -33,10 +36,10 @@ export function useTemporarilyEditedBlocksExit() {
 					// If the user clicks outside the edited block, stop editing.
 					if (
 						! event.target.closest(
-							`[data-block="${ tempEditedClientId }"]`
+							`[data-block="${ editedContentOnlySection }"]`
 						)
 					) {
-						stopEditingAsBlocks();
+						stopEditingContentOnlySection();
 					}
 				}
 			}
@@ -47,6 +50,6 @@ export function useTemporarilyEditedBlocksExit() {
 				node.removeEventListener( 'click', onClick );
 			};
 		},
-		[ getTemporarilyEditingAsBlocks, stopEditingAsBlocks ]
+		[ getEditedContentOnlySection, stopEditingContentOnlySection ]
 	);
 }

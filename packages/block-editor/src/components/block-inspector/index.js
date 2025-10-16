@@ -93,7 +93,7 @@ function BlockInspector() {
 		isSectionBlock,
 		isSectionBlockInSelection,
 		hasBlockStyles,
-		temporarilyEditedClientId,
+		editedContentOnlySection,
 	} = useSelect( ( select ) => {
 		const {
 			getSelectedBlockClientId,
@@ -102,7 +102,7 @@ function BlockInspector() {
 			getBlockName,
 			getParentSectionBlock,
 			isSectionBlock: _isSectionBlock,
-			getTemporarilyEditingAsBlocks,
+			getEditedContentOnlySection,
 		} = unlock( select( blockEditorStore ) );
 		const { getBlockStyles } = select( blocksStore );
 		const _selectedBlockClientId = getSelectedBlockClientId();
@@ -129,7 +129,7 @@ function BlockInspector() {
 			isSectionBlockInSelection: _isSectionBlockInSelection,
 			isSectionBlock: _isSectionBlock( renderedBlockClientId ),
 			hasBlockStyles: _hasBlockStyles,
-			temporarilyEditedClientId: getTemporarilyEditingAsBlocks(),
+			editedContentOnlySection: getEditedContentOnlySection(),
 		};
 	}, [] );
 
@@ -265,7 +265,7 @@ function BlockInspector() {
 				availableTabs={ availableTabs }
 				contentClientIds={ contentClientIds }
 				hasBlockStyles={ hasBlockStyles }
-				temporarilyEditedClientId={ temporarilyEditedClientId }
+				editedContentOnlySection={ editedContentOnlySection }
 			/>
 		</BlockInspectorSingleBlockWrapper>
 	);
@@ -314,13 +314,13 @@ const BlockInspectorSingleBlock = ( {
 	availableTabs,
 	contentClientIds,
 	hasBlockStyles,
-	temporarilyEditedClientId,
+	editedContentOnlySection,
 } ) => {
 	const hasMultipleTabs = availableTabs?.length > 1;
 	const hasParentChildBlockCards =
-		temporarilyEditedClientId && temporarilyEditedClientId !== clientId;
+		editedContentOnlySection && editedContentOnlySection !== clientId;
 	const parentBlockInformation = useBlockDisplayInformation(
-		temporarilyEditedClientId
+		editedContentOnlySection
 	);
 	const blockInformation = useBlockDisplayInformation( clientId );
 	const isBlockSynced = blockInformation.isSynced;
@@ -333,7 +333,7 @@ const BlockInspectorSingleBlock = ( {
 					<BlockCard
 						{ ...parentBlockInformation }
 						allowParentNavigation
-						parentClientId={ temporarilyEditedClientId }
+						parentClientId={ editedContentOnlySection }
 					/>
 				) }
 			<BlockCard

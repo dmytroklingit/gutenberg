@@ -569,7 +569,7 @@ function BlockListBlockProvider( props ) {
 				canMoveBlock,
 
 				getSettings,
-				getTemporarilyEditingAsBlocks,
+				getEditedContentOnlySection,
 				getBlockEditingMode,
 				getBlockName,
 				isFirstMultiSelectedBlock,
@@ -676,8 +676,8 @@ function BlockListBlockProvider( props ) {
 				canRemove,
 				canMove,
 				isSelected: _isSelected,
-				isTemporarilyEditingAsBlocks:
-					getTemporarilyEditingAsBlocks() === clientId,
+				editedContentOnlySection:
+					getEditedContentOnlySection() === clientId,
 				blockEditingMode,
 				mayDisplayControls:
 					_isSelected ||
@@ -739,7 +739,7 @@ function BlockListBlockProvider( props ) {
 		isValid,
 		isSelected = false,
 		themeSupportsLayout,
-		isTemporarilyEditingAsBlocks,
+		editedContentOnlySection,
 		blockEditingMode,
 		mayDisplayControls,
 		mayDisplayParentControls,
@@ -804,7 +804,7 @@ function BlockListBlockProvider( props ) {
 		isSectionBlock,
 		isEditingDisabled,
 		hasEditableOutline,
-		isTemporarilyEditingAsBlocks,
+		editedContentOnlySection,
 		defaultClassName,
 		mayDisplayControls,
 		mayDisplayParentControls,

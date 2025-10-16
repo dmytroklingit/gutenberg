@@ -38,7 +38,7 @@ import {
 	TEMPLATE_POST_TYPE,
 } from '../../store/constants';
 import { useZoomOutModeExit } from './use-zoom-out-mode-exit';
-import { useTemporarilyEditedBlocksExit } from './use-temporarily-edited-blocks-exit';
+import { useEditContentOnlySectionExit } from './use-edit-content-only-section-exit';
 
 const {
 	LayoutStyle,
@@ -368,7 +368,7 @@ function VisualEditor( {
 			isEnabled: renderingMode === 'template-locked',
 		} ),
 		useZoomOutModeExit(),
-		useTemporarilyEditedBlocksExit(),
+		useEditContentOnlySectionExit(),
 	] );
 
 	return (

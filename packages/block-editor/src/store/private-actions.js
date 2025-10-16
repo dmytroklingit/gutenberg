@@ -367,22 +367,22 @@ export function setInsertionPoint( value ) {
 }
 
 /**
- * Temporarily modify/unlock the content-only block for editions.
+ * Temporarily modify/unlock a content-only locked section.
  *
  * @param {string} clientId The client id of the block.
  */
-export const modifyContentLockBlock =
-	( clientId ) =>
-	( { dispatch } ) => {
-		dispatch.__unstableSetTemporarilyEditingAsBlocks( clientId );
+export function editContentOnlySection( clientId ) {
+	return {
+		type: 'EDIT_CONTENT_ONLY_SECTION',
+		clientId,
 	};
-
+}
 /**
- * Action that stops temporarily editing as blocks.
+ * Action that stops editing a content locked section.
  */
-export function stopEditingAsBlocks() {
-	return ( { dispatch } ) => {
-		dispatch.__unstableSetTemporarilyEditingAsBlocks();
+export function stopEditingContentOnlySection() {
+	return {
+		type: 'EDIT_CONTENT_ONLY_SECTION',
 	};
 }
 

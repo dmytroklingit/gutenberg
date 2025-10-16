@@ -1963,15 +1963,15 @@ export function lastBlockInserted( state = {}, action ) {
 }
 
 /**
- * Reducer returning the block that is eding temporarily edited as blocks.
+ * Reducer returning the clientId of a content-only section being edited.
  *
  * @param {Object} state  Current state.
  * @param {Object} action Dispatched action.
  *
  * @return {Object} Updated state.
  */
-export function temporarilyEditingAsBlocks( state = '', action ) {
-	if ( action.type === 'SET_TEMPORARILY_EDITING_AS_BLOCKS' ) {
+export function editedContentOnlySection( state = '', action ) {
+	if ( action.type === 'EDIT_CONTENT_ONLY_SECTION' ) {
 		return action.clientId;
 	}
 	return state;
@@ -2139,7 +2139,7 @@ const combinedReducers = combineReducers( {
 	expandedBlock,
 	highlightedBlock,
 	lastBlockInserted,
-	temporarilyEditingAsBlocks,
+	editedContentOnlySection,
 	blockVisibility,
 	blockEditingModes,
 	styleOverrides,
@@ -2291,7 +2291,7 @@ function getDerivedBlockEditingModesForTree( state, treeClientId = '' ) {
 	).filter(
 		( clientId ) =>
 			state.blockListSettings[ clientId ]?.templateLock ===
-				'contentOnly' && clientId !== state.temporarilyEditingAsBlocks
+				'contentOnly' && clientId !== state.editedContentOnlySection
 	);
 	// Use array.from for better back compat. Older versions of the iterator returned
 	// from `keys()` didn't have the `filter` method.
@@ -2301,7 +2301,7 @@ function getDerivedBlockEditingModesForTree( state, treeClientId = '' ) {
 					( clientId ) =>
 						state.blocks.attributes.get( clientId )?.metadata
 							?.patternName &&
-						clientId !== state.temporarilyEditingAsBlocks
+						clientId !== state.editedContentOnlySection
 			  )
 			: [];
 	const contentOnlyParents = [
@@ -2321,9 +2321,9 @@ function getDerivedBlockEditingModesForTree( state, treeClientId = '' ) {
 			return;
 		}
 
-		if ( state.temporarilyEditingAsBlocks ) {
+		if ( state.editedContentOnlySection ) {
 			// If this is the 'temporarily edited' block, use the default mode.
-			if ( state.temporarilyEditingAsBlocks === clientId ) {
+			if ( state.editedContentOnlySection === clientId ) {
 				derivedBlockEditingModes.set( clientId, 'default' );
 				return;
 			}
@@ -2333,7 +2333,7 @@ function getDerivedBlockEditingModesForTree( state, treeClientId = '' ) {
 			const parentTempEditedClientId = findParentInClientIdsList(
 				state,
 				clientId,
-				[ state.temporarilyEditingAsBlocks ]
+				[ state.editedContentOnlySection ]
 			);
 			if ( parentTempEditedClientId ) {
 				derivedBlockEditingModes.set( clientId, 'default' );
@@ -2827,7 +2827,7 @@ export function withDerivedBlockEditingModes( reducer ) {
 				break;
 			}
 			case 'RESET_BLOCKS':
-			case 'SET_TEMPORARILY_EDITING_AS_BLOCKS':
+			case 'EDIT_CONTENT_ONLY_SECTION':
 			case 'SET_EDITOR_MODE':
 			case 'RESET_ZOOM_LEVEL':
 			case 'SET_ZOOM_LEVEL': {

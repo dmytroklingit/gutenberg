@@ -18,21 +18,23 @@ import { unlock } from '../../lock-unlock';
 // also includes artifacts on the store (actions, reducers, and selector).
 
 export function ModifyContentLockMenuItem( { clientId, onClose } ) {
-	const { templateLock, isLockedByParent, isEditingAsBlocks } = useSelect(
-		( select ) => {
-			const {
-				getContentLockingParent,
-				getTemplateLock,
-				getTemporarilyEditingAsBlocks,
-			} = unlock( select( blockEditorStore ) );
-			return {
-				templateLock: getTemplateLock( clientId ),
-				isLockedByParent: !! getContentLockingParent( clientId ),
-				isEditingAsBlocks: getTemporarilyEditingAsBlocks() === clientId,
-			};
-		},
-		[ clientId ]
-	);
+	const { templateLock, isLockedByParent, isEditingContentOnlySection } =
+		useSelect(
+			( select ) => {
+				const {
+					getContentLockingParent,
+					getTemplateLock,
+					getEditedContentOnlySection,
+				} = unlock( select( blockEditorStore ) );
+				return {
+					templateLock: getTemplateLock( clientId ),
+					isLockedByParent: !! getContentLockingParent( clientId ),
+					isEditingContentOnlySection:
+						getEditedContentOnlySection() === clientId,
+				};
+			},
+			[ clientId ]
+		);
 	const blockEditorActions = useDispatch( blockEditorStore );
 	const isContentLocked =
 		! isLockedByParent && templateLock === 'contentOnly';
@@ -41,19 +43,20 @@ export function ModifyContentLockMenuItem( { clientId, onClose } ) {
 	// This is replaced by an alternative UI in the experiment.
 	if (
 		window?.__experimentalContentOnlyPatternInsertion ||
-		( ! isContentLocked && ! isEditingAsBlocks )
+		( ! isContentLocked && ! isEditingContentOnlySection )
 	) {
 		return null;
 	}
 
-	const { modifyContentLockBlock } = unlock( blockEditorActions );
-	const showStartEditingAsBlocks = ! isEditingAsBlocks && isContentLocked;
+	const { editContentOnlySection } = unlock( blockEditorActions );
+	const showContentOnlyModifyButton =
+		! isEditingContentOnlySection && isContentLocked;
 
 	return (
-		showStartEditingAsBlocks && (
+		showContentOnlyModifyButton && (
 			<MenuItem
 				onClick={ () => {
-					modifyContentLockBlock( clientId );
+					editContentOnlySection( clientId );
 					onClose();
 				} }
 			>

@@ -20,41 +20,45 @@ import { unlock } from '../lock-unlock';
 // also includes artifacts on the store (actions, reducers, and selector).
 
 function ContentLockControlsPure( { clientId } ) {
-	const { templateLock, isLockedByParent, isEditingAsBlocks } = useSelect(
-		( select ) => {
-			const {
-				getContentLockingParent,
-				getTemplateLock,
-				getTemporarilyEditingAsBlocks,
-			} = unlock( select( blockEditorStore ) );
-			return {
-				templateLock: getTemplateLock( clientId ),
-				isLockedByParent: !! getContentLockingParent( clientId ),
-				isEditingAsBlocks: getTemporarilyEditingAsBlocks() === clientId,
-			};
-		},
-		[ clientId ]
-	);
+	const { templateLock, isLockedByParent, isEditedContentOnlySection } =
+		useSelect(
+			( select ) => {
+				const {
+					getContentLockingParent,
+					getTemplateLock,
+					getEditedContentOnlySection,
+				} = unlock( select( blockEditorStore ) );
+				return {
+					templateLock: getTemplateLock( clientId ),
+					isLockedByParent: !! getContentLockingParent( clientId ),
+					isEditedContentOnlySection:
+						getEditedContentOnlySection() === clientId,
+				};
+			},
+			[ clientId ]
+		);
 
-	const { stopEditingAsBlocks } = unlock( useDispatch( blockEditorStore ) );
+	const { stopEditingContentOnlySection } = unlock(
+		useDispatch( blockEditorStore )
+	);
 	const isContentLocked =
 		! isLockedByParent && templateLock === 'contentOnly';
 
 	const stopEditingAsBlockCallback = useCallback( () => {
-		stopEditingAsBlocks( clientId );
-	}, [ clientId, stopEditingAsBlocks ] );
+		stopEditingContentOnlySection( clientId );
+	}, [ clientId, stopEditingContentOnlySection ] );
 
 	// Hide the Done button when the content only pattern insertion experiment is active.
 	// This is replaced by an alternative UI in the experiment.
 	if (
 		window?.__experimentalContentOnlyPatternInsertion ||
-		( ! isContentLocked && ! isEditingAsBlocks )
+		( ! isContentLocked && ! isEditedContentOnlySection )
 	) {
 		return null;
 	}
 
 	return (
-		isEditingAsBlocks && (
+		isEditedContentOnlySection && (
 			<BlockControls group="other">
 				<ToolbarButton onClick={ stopEditingAsBlockCallback }>
 					{ __( 'Done' ) }

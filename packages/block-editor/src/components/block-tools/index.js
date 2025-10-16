@@ -77,7 +77,7 @@ export default function BlockTools( {
 		getBlockRootClientId,
 		isGroupable,
 		getBlockName,
-		getTemporarilyEditingAsBlocks,
+		getEditedContentOnlySection,
 	} = unlock( useSelect( blockEditorStore ) );
 	const { getGroupingBlockName } = useSelect( blocksStore );
 	const { showEmptyBlockSideInserter, showBlockToolbarPopover } =
@@ -95,7 +95,7 @@ export default function BlockTools( {
 		moveBlocksDown,
 		expandBlock,
 		updateBlockAttributes,
-		stopEditingAsBlocks,
+		stopEditingContentOnlySection,
 	} = unlock( useDispatch( blockEditorStore ) );
 
 	function onKeyDown( event ) {
@@ -252,8 +252,8 @@ export default function BlockTools( {
 		// Has the same keyboard shortcut as 'unselect', so can't be within the
 		// if/else chain above.
 		if ( isMatch( 'core/block-editor/stop-editing-as-blocks', event ) ) {
-			if ( getTemporarilyEditingAsBlocks() ) {
-				stopEditingAsBlocks();
+			if ( getEditedContentOnlySection() ) {
+				stopEditingContentOnlySection();
 			}
 		}
 	}

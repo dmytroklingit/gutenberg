@@ -12,28 +12,28 @@ import { store as blockEditorStore } from '../../store';
 import { unlock } from '../../lock-unlock';
 
 export default function EditContents( { clientId } ) {
-	const { modifyContentLockBlock, stopEditingAsBlocks } = unlock(
+	const { editContentOnlySection, stopEditingContentOnlySection } = unlock(
 		useDispatch( blockEditorStore )
 	);
 	const {
 		attributes,
 		isContentOnlyTemplateLocked,
 		isWithinEditedSection,
-		temporarilyEditingBlocks,
+		editedContentOnlySection,
 	} = useSelect(
 		( select ) => {
 			const {
 				getBlockAttributes,
-				getTemporarilyEditingAsBlocks,
+				getEditedContentOnlySection,
 				getTemplateLock,
-				isWithinTemporarilyEditedSection,
+				isWithinEditedContentOnlySection,
 			} = unlock( select( blockEditorStore ) );
 
 			return {
 				attributes: getBlockAttributes( clientId ),
 				isWithinEditedSection:
-					isWithinTemporarilyEditedSection( clientId ),
-				temporarilyEditingBlocks: getTemporarilyEditingAsBlocks(),
+					isWithinEditedContentOnlySection( clientId ),
+				editedContentOnlySection: getEditedContentOnlySection(),
 				isContentOnlyTemplateLocked:
 					getTemplateLock( clientId ) === 'contentOnly',
 			};
@@ -56,14 +56,14 @@ export default function EditContents( { clientId } ) {
 				__next40pxDefaultSize
 				variant="secondary"
 				onClick={ () => {
-					if ( ! temporarilyEditingBlocks ) {
-						modifyContentLockBlock( clientId );
+					if ( ! editedContentOnlySection ) {
+						editContentOnlySection( clientId );
 					} else {
-						stopEditingAsBlocks();
+						stopEditingContentOnlySection();
 					}
 				} }
 			>
-				{ temporarilyEditingBlocks
+				{ editedContentOnlySection
 					? __( 'Lock design' )
 					: __( 'Unlock design' ) }
 			</Button>

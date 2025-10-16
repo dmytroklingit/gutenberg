@@ -526,7 +526,7 @@ export const getParentSectionBlock = ( state, clientId ) => {
  * @return {boolean} Whether the block is a content locking parent.
  */
 export function isSectionBlock( state, clientId ) {
-	if ( clientId === state.temporarilyEditingAsBlocks ) {
+	if ( clientId === state.editedContentOnlySection ) {
 		return false;
 	}
 
@@ -557,22 +557,22 @@ export function isSectionBlock( state, clientId ) {
  *
  * @return {?string} The client ID of the block being temporarily edited as a non-locked block.
  */
-export function getTemporarilyEditingAsBlocks( state ) {
-	return state.temporarilyEditingAsBlocks;
+export function getEditedContentOnlySection( state ) {
+	return state.editedContentOnlySection;
 }
 
-export function isWithinTemporarilyEditedSection( state, clientId ) {
-	if ( ! state.temporarilyEditingAsBlocks ) {
+export function isWithinEditedContentOnlySection( state, clientId ) {
+	if ( ! state.editedContentOnlySection ) {
 		return false;
 	}
 
-	if ( state.temporarilyEditingAsBlocks === clientId ) {
+	if ( state.editedContentOnlySection === clientId ) {
 		return true;
 	}
 
 	let current = clientId;
 	while ( ( current = state.blocks.parents.get( current ) ) ) {
-		if ( state.temporarilyEditingAsBlocks === current ) {
+		if ( state.editedContentOnlySection === current ) {
 			return true;
 		}
 	}
@@ -728,5 +728,5 @@ export const isBlockHidden = ( state, clientId ) => {
  * @return {boolean} Whether the block is currently spotlighted.
  */
 export function hasBlockSpotlight( state ) {
-	return !! state.hasBlockSpotlight || !! state.temporarilyEditingAsBlocks;
+	return !! state.hasBlockSpotlight || !! state.editedContentOnlySection;
 }

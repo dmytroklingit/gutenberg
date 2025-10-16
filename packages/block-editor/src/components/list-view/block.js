@@ -134,9 +134,8 @@ function ListViewBlock( {
 				select( blockEditorStore );
 			const {
 				isBlockHidden: _isBlockHidden,
-				getTemporarilyEditingAsBlocks,
 				hasSelectedInnerBlock,
-				isWithinTemporarilyEditedSection,
+				isWithinEditedContentOnlySection,
 			} = unlock( select( blockEditorStore ) );
 
 			return {
@@ -145,14 +144,12 @@ function ListViewBlock( {
 				allowRightClickOverrides:
 					getSettings().allowRightClickOverrides,
 				isBlockHidden: _isBlockHidden( clientId ),
-				isTemporarilyEditedBlock:
-					getTemporarilyEditingAsBlocks() === clientId,
 				hasSelectedChild: hasSelectedInnerBlock(
 					clientId,
 					true // deep check.
 				),
 				isWithinEditedSection:
-					isWithinTemporarilyEditedSection( clientId ),
+					isWithinEditedContentOnlySection( clientId ),
 			};
 		},
 		[ clientId ]

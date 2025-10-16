@@ -37,7 +37,7 @@ import { unlock } from '../lock-unlock';
 
 import {
 	getContentLockingParent,
-	getTemporarilyEditingAsBlocks,
+	getEditedContentOnlySection,
 	getSectionRootClientId,
 	isSectionBlock,
 	getParentSectionBlock,
@@ -3209,5 +3209,5 @@ export function __unstableGetTemporarilyEditingAsBlocks( state ) {
 			version: '6.7',
 		}
 	);
-	return getTemporarilyEditingAsBlocks( state );
+	return getEditedContentOnlySection( state );
 }
