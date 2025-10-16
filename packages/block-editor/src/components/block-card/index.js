@@ -78,6 +78,7 @@ function OptionalParentSelectButton( { children, onClick } ) {
  * @param {string}        [props.allowParentNavigation] Show a back arrow to the parent block in some situations.
  * @param {string}        [props.parentClientId]        The parent clientId, if this card is for a parent block.
  * @param {string}        [props.isChild]               Whether the block card is for a child block, in which case, indent the block using an arrow.
+ * @param {string}        [props.clientId]              Whether the block card is for a child block, in which case, indent the block using an arrow.
  * @param {Element}       [props.children]              Children.
  * @return {Element}                        Block card component.
  */
@@ -92,6 +93,7 @@ function BlockCard( {
 	parentClientId,
 	isChild,
 	children,
+	clientId,
 } ) {
 	if ( blockType ) {
 		deprecated( '`blockType` property in `BlockCard component`', {
@@ -106,18 +108,15 @@ function BlockCard( {
 			if ( parentClientId || isChild || ! allowParentNavigation ) {
 				return;
 			}
-			const { getSelectedBlockClientId, getBlockParentsByBlockName } =
-				select( blockEditorStore );
-
-			const _selectedBlockClientId = getSelectedBlockClientId();
+			const { getBlockParentsByBlockName } = select( blockEditorStore );
 
 			return getBlockParentsByBlockName(
-				_selectedBlockClientId,
+				clientId,
 				'core/navigation',
 				true
 			)[ 0 ];
 		},
-		[ allowParentNavigation, isChild, parentClientId ]
+		[ clientId, allowParentNavigation, isChild, parentClientId ]
 	);
 
 	const { selectBlock } = useDispatch( blockEditorStore );

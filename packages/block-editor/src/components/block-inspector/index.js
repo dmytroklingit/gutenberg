@@ -346,6 +346,7 @@ const BlockInspectorSingleBlock = ( {
 				className={ isBlockSynced && 'is-synced' }
 				allowParentNavigation
 				isChild={ hasParentChildBlockCards }
+				clientId={ clientId }
 			/>
 			{ window?.__experimentalContentOnlyPatternInsertion && (
 				<EditContents clientId={ clientId } />
