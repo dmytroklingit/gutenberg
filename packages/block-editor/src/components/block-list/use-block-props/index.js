@@ -182,8 +182,7 @@ export function useBlockProps( props = {}, { __unstableIsHtml } = {} ) {
 				'is-editing-disabled': isEditingDisabled,
 				'has-editable-outline': hasEditableOutline,
 				'has-negative-margin': hasNegativeMargin,
-				'is-content-locked-temporarily-editing-as-blocks':
-					editedContentOnlySection,
+				'is-editing-content-only-section': editedContentOnlySection,
 				'is-block-hidden': isBlockHidden,
 			},
 			className,
