@@ -15,37 +15,29 @@ export default function EditContents( { clientId } ) {
 	const { editContentOnlySection, stopEditingContentOnlySection } = unlock(
 		useDispatch( blockEditorStore )
 	);
-	const {
-		attributes,
-		isContentOnlyTemplateLocked,
-		isWithinEditedSection,
-		editedContentOnlySection,
-	} = useSelect(
-		( select ) => {
-			const {
-				getBlockAttributes,
-				getEditedContentOnlySection,
-				getTemplateLock,
-				isWithinEditedContentOnlySection,
-			} = unlock( select( blockEditorStore ) );
+	const { isWithinSection, isWithinEditedSection, editedContentOnlySection } =
+		useSelect(
+			( select ) => {
+				const {
+					isSectionBlock,
+					getParentSectionBlock,
+					getEditedContentOnlySection,
+					isWithinEditedContentOnlySection,
+				} = unlock( select( blockEditorStore ) );
 
-			return {
-				attributes: getBlockAttributes( clientId ),
-				isWithinEditedSection:
-					isWithinEditedContentOnlySection( clientId ),
-				editedContentOnlySection: getEditedContentOnlySection(),
-				isContentOnlyTemplateLocked:
-					getTemplateLock( clientId ) === 'contentOnly',
-			};
-		},
-		[ clientId ]
-	);
+				return {
+					isWithinSection:
+						isSectionBlock( clientId ) ||
+						!! getParentSectionBlock( clientId ),
+					isWithinEditedSection:
+						isWithinEditedContentOnlySection( clientId ),
+					editedContentOnlySection: getEditedContentOnlySection(),
+				};
+			},
+			[ clientId ]
+		);
 
-	if (
-		! attributes?.metadata?.patternName &&
-		! isContentOnlyTemplateLocked &&
-		! isWithinEditedSection
-	) {
+	if ( ! isWithinSection && ! isWithinEditedSection ) {
 		return null;
 	}
 
