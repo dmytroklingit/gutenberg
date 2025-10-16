@@ -103,7 +103,7 @@ function BlockCard( {
 
 	const parentNavBlockClientId = useSelect(
 		( select ) => {
-			if ( ! parentClientId && ! isChild && ! allowParentNavigation ) {
+			if ( parentClientId || isChild || ! allowParentNavigation ) {
 				return;
 			}
 			const { getSelectedBlockClientId, getBlockParentsByBlockName } =
