@@ -58,6 +58,7 @@ const V2_PACKAGES = [
 	'html-entities',
 	'i18n',
 	'icons',
+	'image-cropper',
 	'interactivity',
 	'interactivity-router',
 	'interface',

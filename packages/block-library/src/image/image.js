@@ -943,7 +943,7 @@ export default function Image( {
 			/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */
 		);
 
-	if ( canEditImage && isEditingImage ) {
+	if ( canEditImage && isEditingImage && !! url ) {
 		img = (
 			<ImageWrapper href={ href }>
 				<ImageEditor
