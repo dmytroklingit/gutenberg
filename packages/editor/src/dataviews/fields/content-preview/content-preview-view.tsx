@@ -3,7 +3,9 @@
  */
 import { __ } from '@wordpress/i18n';
 import {
+	// @ts-ignore
 	BlockPreview,
+	// @ts-ignore
 	privateApis as blockEditorPrivateApis,
 	// @ts-ignore
 } from '@wordpress/block-editor';
@@ -16,7 +18,6 @@ import { useEntityBlockEditor, store as coreStore } from '@wordpress/core-data';
  */
 import { EditorProvider } from '../../../components/provider';
 import { unlock } from '../../../lock-unlock';
-// @ts-ignore
 import { store as editorStore } from '../../../store';
 
 const { useGlobalStyle } = unlock( blockEditorPrivateApis );
