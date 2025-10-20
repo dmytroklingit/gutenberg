@@ -11,12 +11,23 @@ import type {
 	NormalizedRowLayout,
 	NormalizedCardSummaryField,
 	CardSummaryField,
+	CombinedFormField,
 } from '../types';
 
-interface NormalizedFormField {
+type NormalizedFormField =
+	| NormalizedSimpleFormField
+	| NormalizedCombinedFormField;
+
+type NormalizedSimpleFormField = {
 	id: string;
 	layout: Layout;
-}
+};
+
+type NormalizedCombinedFormField = {
+	id: string;
+	layout: Layout;
+	children: NormalizedFormField[];
+};
 
 export const DEFAULT_LAYOUT: NormalizedLayout = {
 	type: 'regular',
@@ -113,9 +124,19 @@ export default function normalizeFormFields(
 		const fieldLayout = field.layout
 			? normalizeLayout( field.layout )
 			: formLayout;
+
+		const children =
+			'children' in field && Array.isArray( field.children )
+				? normalizeFormFields( {
+						fields: ( field as CombinedFormField ).children,
+						layout: fieldLayout,
+				  } )
+				: undefined;
+
 		return {
 			...field,
 			layout: fieldLayout,
-		};
+			children,
+		} satisfies NormalizedFormField;
 	} );
 }

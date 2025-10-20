@@ -293,4 +293,78 @@ describe( 'normalizeFormFields', () => {
 			] );
 		} );
 	} );
+
+	describe( 'nested fields', () => {
+		it( 'nested fields are normalized as well', () => {
+			const REGULAR = {
+				type: 'regular',
+				labelPosition: 'top',
+			};
+			const form: Form = {
+				fields: [
+					'field1',
+					{
+						id: 'field2',
+						children: [
+							'field3',
+							{
+								id: 'field4',
+								children: [
+									'field5',
+									{
+										id: 'field6',
+										children: [
+											'field7',
+											{
+												id: 'field8',
+												children: [ 'field9' ],
+											},
+										],
+									},
+								],
+							},
+						],
+					},
+				],
+			};
+			const result = normalizeFormFields( form );
+			expect( result ).toStrictEqual( [
+				{
+					id: 'field1',
+					layout: REGULAR,
+				},
+				{
+					id: 'field2',
+					layout: REGULAR,
+					children: [
+						{ id: 'field3', layout: REGULAR },
+						{
+							id: 'field4',
+							layout: REGULAR,
+							children: [
+								{ id: 'field5', layout: REGULAR },
+								{
+									id: 'field6',
+									layout: REGULAR,
+									children: [
+										{ id: 'field7', layout: REGULAR },
+										{
+											id: 'field8',
+											layout: REGULAR,
+											children: [
+												{
+													id: 'field9',
+													layout: REGULAR,
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+			] );
+		} );
+	} );
 } );
