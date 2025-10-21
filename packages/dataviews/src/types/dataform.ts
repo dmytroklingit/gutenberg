@@ -142,3 +142,18 @@ export interface FieldLayoutProps< Item > {
 	hideLabelFromVision?: boolean;
 	validity?: FieldValidity;
 }
+
+export type NormalizedFormField =
+	| NormalizedSimpleFormField
+	| NormalizedCombinedFormField;
+
+type NormalizedSimpleFormField = {
+	id: string;
+	layout: Layout;
+};
+
+type NormalizedCombinedFormField = {
+	id: string;
+	layout: Layout;
+	children: NormalizedFormField[];
+};

@@ -12,22 +12,8 @@ import type {
 	NormalizedCardSummaryField,
 	CardSummaryField,
 	CombinedFormField,
+	NormalizedFormField,
 } from '../types';
-
-type NormalizedFormField =
-	| NormalizedSimpleFormField
-	| NormalizedCombinedFormField;
-
-type NormalizedSimpleFormField = {
-	id: string;
-	layout: Layout;
-};
-
-type NormalizedCombinedFormField = {
-	id: string;
-	layout: Layout;
-	children: NormalizedFormField[];
-};
 
 export const DEFAULT_LAYOUT: NormalizedLayout = {
 	type: 'regular',
