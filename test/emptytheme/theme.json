@@ -8,6 +8,24 @@
 			"wideSize": "1100px"
 		}
 	},
+	"styles": {
+		"blocks": {
+			"core/paragraph": {
+				"color": {
+					"background": "pink"
+				},
+				"dimensions": {
+					"width": "300px"
+				},
+				"spacing": {
+					"padding": {
+						"left": "2rem",
+						"right": "2rem"
+					}
+				}
+			}
+		}
+	},
 	"customTemplates": [
 		{
 			"name": "custom-template",

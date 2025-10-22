@@ -272,7 +272,7 @@ export function useSettingsForBlockElement(
 			}
 		} );
 
-		[ 'aspectRatio', 'minHeight' ].forEach( ( key ) => {
+		[ 'aspectRatio', 'minHeight', 'width' ].forEach( ( key ) => {
 			if ( ! supportedStyles.includes( key ) ) {
 				updatedSettings.dimensions = {
 					...updatedSettings.dimensions,
@@ -280,14 +280,6 @@ export function useSettingsForBlockElement(
 				};
 			}
 		} );
-
-		if ( supportedStyles.includes( 'width' ) ) {
-			updatedSettings.dimensions.width = true;
-		}
-
-		if ( supportedStyles.includes( 'height' ) ) {
-			updatedSettings.dimensions.height = true;
-		}
 
 		[ 'radius', 'color', 'style', 'width' ].forEach( ( key ) => {
 			if (
