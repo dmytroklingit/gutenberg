@@ -17,7 +17,7 @@ import {
 	isTemplatePart,
 } from '@wordpress/blocks';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { copy } from '@wordpress/icons';
+import { copy, symbol } from '@wordpress/icons';
 import { store as preferencesStore } from '@wordpress/preferences';
 
 /**
@@ -224,12 +224,18 @@ export const BlockSwitcher = ( { clientIds } ) => {
 			let _icon;
 			let _hasTemplateLock;
 			if ( _isSingleBlockSelected ) {
-				const match = getActiveBlockVariation(
-					firstBlockName,
-					getBlockAttributes( clientIds[ 0 ] )
-				);
-				// Take into account active block variations.
-				_icon = match?.icon || blockType.icon;
+				const blockAttributes = getBlockAttributes( clientIds[ 0 ] );
+				// Check if this is a pattern block
+				if ( blockAttributes?.metadata?.patternName ) {
+					_icon = symbol;
+				} else {
+					const match = getActiveBlockVariation(
+						firstBlockName,
+						blockAttributes
+					);
+					// Take into account active block variations.
+					_icon = match?.icon || blockType.icon;
+				}
 				_hasTemplateLock =
 					getTemplateLock( clientIds[ 0 ] ) === 'contentOnly';
 			} else {
