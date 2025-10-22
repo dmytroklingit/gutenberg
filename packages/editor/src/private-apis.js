@@ -30,6 +30,7 @@ import {
 } from '@wordpress/fields';
 import { registerCoreBlockBindingsSources } from './bindings/api';
 import { getTemplateInfo } from './utils/get-template-info';
+import { usePaddingAppender } from './components/hooks/use-padding-appender.js';
 
 const { store: interfaceStore, ...remainingInterfaceApis } = interfaceApis;
 
@@ -47,6 +48,7 @@ lock( privateApis, {
 	PluginPostExcerpt,
 	PostCardPanel,
 	PreferencesModal,
+	usePaddingAppender,
 	usePostActions,
 	usePostFields,
 	ToolsMoreMenuGroup,

@@ -70,14 +70,14 @@ import WelcomeGuide from '../welcome-guide';
 import { store as editPostStore } from '../../store';
 import { unlock } from '../../lock-unlock';
 import useEditPostCommands from '../../commands/use-commands';
-import { usePaddingAppender } from './use-padding-appender';
 import { useShouldIframe } from './use-should-iframe';
 import useNavigateToEntityRecord from '../../hooks/use-navigate-to-entity-record';
 import { useMetaBoxInitialization } from '../meta-boxes/use-meta-box-initialization';
 
 const { getLayoutStyles } = unlock( blockEditorPrivateApis );
 const { useCommandContext } = unlock( commandsPrivateApis );
-const { Editor, FullscreenMode } = unlock( editorPrivateApis );
+const { Editor, FullscreenMode, usePaddingAppender } =
+	unlock( editorPrivateApis );
 const { BlockKeyboardShortcuts } = unlock( blockLibraryPrivateApis );
 const DESIGN_POST_TYPES = [
 	'wp_template',
