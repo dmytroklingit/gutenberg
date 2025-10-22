@@ -100,6 +100,42 @@ function BlockBindingsPanelMenuContent( {
 				}
 
 				if ( source.mode === 'dropdown' ) {
+					// Prepare dropdown items: validate getValues and fetch current values.
+					const dropdownItems = sourceDataItems
+						.map( ( item ) => {
+							const itemBindings = {
+								source: sourceKey,
+								args: item?.args || {
+									key: item.key,
+								},
+							};
+
+							// Try to get values if getValues is available.
+							let values = {};
+							if ( source.getValues ) {
+								try {
+									values = source.getValues( {
+										select,
+										context: blockContext,
+										bindings: {
+											[ attribute ]: itemBindings,
+										},
+									} );
+								} catch ( error ) {
+									// Skip items where getValues throws an error.
+									return null;
+								}
+							}
+
+							return { item, itemBindings, values };
+						} )
+						.filter( Boolean );
+
+					// Don't show this source if no items are available.
+					if ( dropdownItems.length === 0 ) {
+						return null;
+					}
+
 					return (
 						<Menu
 							key={ sourceKey }
@@ -114,21 +150,8 @@ function BlockBindingsPanelMenuContent( {
 							</Menu.SubmenuTriggerItem>
 							<Menu.Popover gutter={ 8 }>
 								<Menu.Group>
-									{ sourceDataItems.map( ( item ) => {
-										const itemBindings = {
-											source: sourceKey,
-											args: item?.args || {
-												key: item.key,
-											},
-										};
-										const values = source.getValues( {
-											select,
-											context: blockContext,
-											bindings: {
-												[ attribute ]: itemBindings,
-											},
-										} );
-										return (
+									{ dropdownItems.map(
+										( { item, itemBindings, values } ) => (
 											<Menu.CheckboxItem
 												key={
 													sourceKey +
@@ -178,8 +201,8 @@ function BlockBindingsPanelMenuContent( {
 													{ values[ attribute ] }
 												</Menu.ItemHelpText>
 											</Menu.CheckboxItem>
-										);
-									} ) }
+										)
+									) }
 								</Menu.Group>
 							</Menu.Popover>
 						</Menu>
@@ -363,38 +386,46 @@ export const BlockBindingsPanel = ( { name: blockName, metadata } ) => {
 					}
 
 					if ( editorUI ) {
-						const editorUIResult = editorUI( {
-							select,
-							context,
-						} );
-
-						_sources[ sourceName ] = {
-							...editorUIResult,
-							label,
-							getValues,
-						};
-					} else if ( getFieldsList ) {
-						// Backward compatibility: Convert getFieldsList to editorUI format.
-						const fieldsListResult = getFieldsList( {
-							select,
-							context,
-						} );
-
-						if ( fieldsListResult ) {
-							const data = Object.entries( fieldsListResult ).map(
-								( [ key, field ] ) => ( {
-									label: field.label || key,
-									type: field.type || 'string',
-									args: { key },
-								} )
-							);
+						try {
+							const editorUIResult = editorUI( {
+								select,
+								context,
+							} );
 
 							_sources[ sourceName ] = {
-								mode: 'dropdown', // Default mode for backward compatibility.
-								data,
+								...editorUIResult,
 								label,
 								getValues,
 							};
+						} catch ( error ) {
+							// Skip sources where editorUI throws an error
+						}
+					} else if ( getFieldsList ) {
+						// Backward compatibility: Convert getFieldsList to editorUI format.
+						try {
+							const fieldsListResult = getFieldsList( {
+								select,
+								context,
+							} );
+
+							if ( fieldsListResult ) {
+								const data = Object.entries(
+									fieldsListResult
+								).map( ( [ key, field ] ) => ( {
+									label: field.label || key,
+									type: field.type || 'string',
+									args: { key },
+								} ) );
+
+								_sources[ sourceName ] = {
+									mode: 'dropdown', // Default mode for backward compatibility.
+									data,
+									label,
+									getValues,
+								};
+							}
+						} catch ( error ) {
+							// Skip sources where getFieldsList throws an error
 						}
 					} else {
 						/*
