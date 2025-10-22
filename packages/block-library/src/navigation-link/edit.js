@@ -543,17 +543,22 @@ export default function NavigationLinkEdit( {
 							anchor={ popoverAnchor }
 							onRemove={ removeLink }
 							onChange={ ( updatedValue ) => {
-								updateAttributes(
+								const {
+									isEntityLink,
+									attributes: updatedAttributes,
+								} = updateAttributes(
 									updatedValue,
 									setAttributes,
 									attributes
 								);
 
-								// Handle URL binding
-								if ( ! updatedValue?.id ) {
-									clearBinding();
+								// Handle URL binding based on the final computed state
+								// Only create bindings for entity links (posts, pages, taxonomies)
+								// Never create bindings for custom links (manual URLs)
+								if ( isEntityLink ) {
+									createBinding( updatedAttributes );
 								} else {
-									createBinding();
+									clearBinding();
 								}
 							} }
 						/>
