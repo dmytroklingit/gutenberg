@@ -17,11 +17,17 @@ export default function ListViewExpander( { onClick } ) {
 		// eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
 		<span
 			className="block-editor-list-view__expander"
-			onClick={ ( event ) => onClick( event, { forceToggle: true } ) }
+			onClick={
+				onClick
+					? ( event ) => onClick( event, { forceToggle: true } )
+					: undefined
+			}
 			aria-hidden="true"
 			data-testid="list-view-expander"
 		>
-			<Icon icon={ isRTL() ? chevronLeftSmall : chevronRightSmall } />
+			{ onClick && (
+				<Icon icon={ isRTL() ? chevronLeftSmall : chevronRightSmall } />
+			) }
 		</span>
 	);
 }
