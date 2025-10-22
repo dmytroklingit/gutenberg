@@ -56,7 +56,7 @@ import {
 } from './use-resolve-edited-entity';
 import SitePreview from './site-preview';
 
-const { Editor, BackButton } = unlock( editorPrivateApis );
+const { Editor, BackButton, usePaddingAppender } = unlock( editorPrivateApis );
 const { useHistory, useLocation } = unlock( routerPrivateApis );
 const { BlockKeyboardShortcuts } = unlock( blockLibraryPrivateApis );
 
@@ -137,20 +137,23 @@ export default function EditSiteEditor( {
 		editorCanvasView,
 		currentPostIsTrashed,
 		hasSiteIcon,
+		isRenderingPostOnly,
 	} = useSelect( ( select ) => {
 		const { getEditorCanvasContainerView } = unlock(
 			select( editSiteStore )
 		);
 		const { getCurrentTheme, getEntityRecord } = select( coreDataStore );
 		const siteData = getEntityRecord( 'root', '__unstableBase', undefined );
+		const { getRenderingMode, getCurrentPostAttribute } =
+			select( editorStore );
 
 		return {
 			isBlockBasedTheme: getCurrentTheme()?.is_block_theme,
 			editorCanvasView: getEditorCanvasContainerView(),
 			currentPostIsTrashed:
-				select( editorStore ).getCurrentPostAttribute( 'status' ) ===
-				'trash',
+				getCurrentPostAttribute( 'status' ) === 'trash',
 			hasSiteIcon: !! siteData?.site_icon_url,
+			isRenderingPostOnly: getRenderingMode() === 'post-only',
 		};
 	}, [] );
 	const postWithTemplate = !! context?.postId;
@@ -167,6 +170,9 @@ export default function EditSiteEditor( {
 		'edit-site-editor__loading-progress'
 	);
 
+	const [ paddingAppenderRef, paddingStyle ] = usePaddingAppender(
+		canvas === 'edit' && isRenderingPostOnly && context?.postType
+	);
 	const settings = useSpecificEditorSettings();
 	const styles = useMemo(
 		() => [
@@ -181,8 +187,9 @@ export default function EditSiteEditor( {
 						  }}`
 						: undefined,
 			},
+			{ css: paddingStyle },
 		],
-		[ settings.styles, canvas, currentPostIsTrashed ]
+		[ settings.styles, canvas, currentPostIsTrashed, paddingStyle ]
 	);
 	const { resetZoomLevel } = unlock( useDispatch( blockEditorStore ) );
 	const { createSuccessNotice } = useDispatch( noticesStore );
@@ -272,6 +279,7 @@ export default function EditSiteEditor( {
 					settings={ settings }
 					className="edit-site-editor__editor-interface"
 					styles={ styles }
+					contentRef={ paddingAppenderRef }
 					customSaveButton={
 						_isPreviewingTheme && <SaveButton size="compact" />
 					}
