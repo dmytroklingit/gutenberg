@@ -28,6 +28,7 @@ import { useViewportMatch } from '@wordpress/compose';
 import { useBlockBindingsUtils } from '../utils/block-bindings';
 import { unlock } from '../lock-unlock';
 import InspectorControls from '../components/inspector-controls';
+import { PrivateBlockContext } from '../components/block-list/private-block-context';
 import BlockContext from '../components/block-context';
 import { useBlockEditContext } from '../components/block-edit';
 import { store as blockEditorStore } from '../store';
@@ -326,6 +327,7 @@ function EditableBlockBindingsPanelItem( {
 
 export const BlockBindingsPanel = ( { name: blockName, metadata } ) => {
 	const blockContext = useContext( BlockContext );
+	const { bindableAttributes } = useContext( PrivateBlockContext );
 	const { removeAllBlockBindings } = useBlockBindingsUtils();
 	const dropdownMenuProps = useToolsPanelDropdownMenuProps();
 	const [ modalState, setModalState ] = useState( null );
@@ -338,13 +340,10 @@ export const BlockBindingsPanel = ( { name: blockName, metadata } ) => {
 	// or when underlying data changes.
 	// Still needs a fix regarding _sources scope.
 	const _sources = {};
-	const { sources, canUpdateBlockBindings, bindableAttributes } = useSelect(
+	const { sources, canUpdateBlockBindings } = useSelect(
 		( select ) => {
-			const { __experimentalBlockBindingsSupportedAttributes } =
-				select( blockEditorStore ).getSettings();
-			const _bindableAttributes =
-				__experimentalBlockBindingsSupportedAttributes?.[ blockName ];
-			if ( ! _bindableAttributes || _bindableAttributes.length === 0 ) {
+			// Early return to avoid subscription when block has no bindable attributes
+			if ( ! bindableAttributes || bindableAttributes.length === 0 ) {
 				return EMPTY_OBJECT;
 			}
 
@@ -418,10 +417,9 @@ export const BlockBindingsPanel = ( { name: blockName, metadata } ) => {
 				canUpdateBlockBindings:
 					select( blockEditorStore ).getSettings()
 						.canUpdateBlockBindings,
-				bindableAttributes: _bindableAttributes,
 			};
 		},
-		[ blockContext, blockName ]
+		[ blockContext, bindableAttributes ]
 	);
 	// Return early if there are no bindable attributes.
 	if ( ! bindableAttributes || bindableAttributes.length === 0 ) {
