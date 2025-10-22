@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Bug Fixes
+
+-   Fix `WP_ENV_MULTISITE` environment variable override not working correctly ([#72567](https://github.com/WordPress/gutenberg/pull/72567)).
+
 ## 10.33.0 (2025-10-17)
 
 ## 10.32.0 (2025-10-01)
