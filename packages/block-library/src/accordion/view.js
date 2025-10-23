@@ -6,7 +6,12 @@ import { store, getContext, withSyncEvent } from '@wordpress/interactivity';
 store( 'core/accordion', {
 	state: {
 		get isOpen() {
-			const { id, accordionItems } = getContext();
+			const context = getContext();
+			if ( ! context ) {
+				return false;
+			}
+
+			const { id, accordionItems } = context;
 			const accordionItem = accordionItems.find(
 				( item ) => item.id === id
 			);
